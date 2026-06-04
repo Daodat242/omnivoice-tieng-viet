@@ -33,6 +33,103 @@ except Exception:
 _VI_LANGUAGES = ["Auto", "vi", "en", "zh", "ja", "ko", "fr", "de", "es", "th", "id", "ms"] + \
     [l for l in _ALL_LANGUAGES if l not in ["Auto", "vi", "en", "zh", "ja", "ko", "fr", "de", "es", "th", "id", "ms"]]
 
+# Map ten day du -> ma ngon ngu
+_LANG_DISPLAY = {
+    "Auto": "Auto (Tự nhận diện)",
+    "vi": "Tiếng Việt",
+    "en": "English (Tiếng Anh)",
+    "zh": "中文 (Tiếng Trung)",
+    "ja": "日本語 (Tiếng Nhật)",
+    "ko": "한국어 (Tiếng Hàn)",
+    "fr": "Français (Tiếng Pháp)",
+    "de": "Deutsch (Tiếng Đức)",
+    "es": "Español (Tiếng Tây Ban Nha)",
+    "th": "ไทย (Tiếng Thái)",
+    "id": "Bahasa Indonesia (Tiếng Indonesia)",
+    "ms": "Bahasa Melayu (Tiếng Mã Lai)",
+    "pt": "Português (Tiếng Bồ Đào Nha)",
+    "it": "Italiano (Tiếng Ý)",
+    "ru": "Русский (Tiếng Nga)",
+    "ar": "العربية (Tiếng Ả Rập)",
+    "hi": "हिन्दी (Tiếng Hindi)",
+    "tr": "Türkçe (Tiếng Thổ Nhĩ Kỳ)",
+    "nl": "Nederlands (Tiếng Hà Lan)",
+    "pl": "Polski (Tiếng Ba Lan)",
+    "sv": "Svenska (Tiếng Thụy Điển)",
+    "da": "Dansk (Tiếng Đan Mạch)",
+    "fi": "Suomi (Tiếng Phần Lan)",
+    "nb": "Norsk bokmål (Tiếng Na Uy)",
+    "uk": "Українська (Tiếng Ukraina)",
+    "cs": "Čeština (Tiếng Séc)",
+    "el": "Ελληνικά (Tiếng Hy Lạp)",
+    "hu": "Magyar (Tiếng Hungary)",
+    "ro": "Română (Tiếng Romania)",
+    "bg": "Български (Tiếng Bulgaria)",
+    "hr": "Hrvatski (Tiếng Croatia)",
+    "sk": "Slovenčina (Tiếng Slovak)",
+    "lt": "Lietuvių (Tiếng Litva)",
+    "lv": "Latviešu (Tiếng Latvia)",
+    "et": "Eesti (Tiếng Estonia)",
+    "sl": "Slovenščina (Tiếng Slovenia)",
+    "ca": "Català (Tiếng Catalonia)",
+    "gl": "Galego (Tiếng Galicia)",
+    "eu": "Euskara (Tiếng Basque)",
+    "af": "Afrikaans (Tiếng Afrikaans)",
+    "sw": "Kiswahili (Tiếng Swahili)",
+    "bn": "বাংলা (Tiếng Bengal)",
+    "ta": "தமிழ் (Tiếng Tamil)",
+    "te": "తెలుగు (Tiếng Telugu)",
+    "ml": "മലയാളം (Tiếng Malayalam)",
+    "kn": "ಕನ್ನಡ (Tiếng Kannada)",
+    "mr": "मराठी (Tiếng Marathi)",
+    "gu": "ગુજરાતી (Tiếng Gujarati)",
+    "pa": "ਪੰਜਾਬੀ (Tiếng Punjab)",
+    "ur": "اردو (Tiếng Urdu)",
+    "fa": "فارسی (Tiếng Ba Tư)",
+    "he": "עברית (Tiếng Do Thái)",
+    "my": "မြန်မာ (Tiếng Myanmar)",
+    "km": "ខ្មែរ (Tiếng Khmer)",
+    "lo": "ລາວ (Tiếng Lào)",
+    "ka": "ქართული (Tiếng Gruzia)",
+    "am": "አማርኛ (Tiếng Amharic)",
+    "ne": "नेपाली (Tiếng Nepal)",
+    "si": "සිංහල (Tiếng Sinhala)",
+    "jv": "Basa Jawa (Tiếng Java)",
+    "su": "Basa Sunda (Tiếng Sunda)",
+    "mg": "Malagasy (Tiếng Malagasy)",
+    "mt": "Malti (Tiếng Malta)",
+    "cy": "Cymraeg (Tiếng Wales)",
+    "ga": "Gaeilge (Tiếng Ireland)",
+    "is": "Íslenska (Tiếng Iceland)",
+    "mk": "Македонски (Tiếng Macedonia)",
+    "sq": "Shqip (Tiếng Albania)",
+    "bs": "Bosanski (Tiếng Bosnia)",
+    "sr": "Српски (Tiếng Serbia)",
+    "me": "Crnogorski (Tiếng Montenegro)",
+    "mn": "Монгол (Tiếng Mông Cổ)",
+    "ky": "Кыргызча (Tiếng Kyrgyz)",
+    "uz": "O'zbek (Tiếng Uzbek)",
+    "tk": "Türkmen (Tiếng Turkmen)",
+    "ha": "Hausa (Tiếng Hausa)",
+    "yo": "Yorùbá (Tiếng Yoruba)",
+    "ig": "Igbo (Tiếng Igbo)",
+    "zu": "isiZulu (Tiếng Zulu)",
+    "xh": "isiXhosa (Tiếng Xhosa)",
+    "af": "Afrikaans (Tiếng Afrikaans)",
+    "tl": "Filipino (Tiếng Philippines)",
+}
+
+# Tao danh sach hien thi voi ten day du
+_VI_LANGUAGES_DISPLAY = []
+for l in _VI_LANGUAGES:
+    _VI_LANGUAGES_DISPLAY.append(_LANG_DISPLAY.get(l, l))
+
+# Map display name -> code
+_DISPLAY_TO_CODE = {}
+for l in _VI_LANGUAGES:
+    display = _LANG_DISPLAY.get(l, l)
+    _DISPLAY_TO_CODE[display] = l
+
 _VOICE_PRESETS = {
     "Nam - Trung niên": "male, middle-aged, moderate pitch",
     "Nam - Trẻ tuổi": "male, young adult, moderate pitch",
@@ -190,8 +287,8 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
                         placeholder="Nhập văn bản và CHỌN NGÔN NGỮ bên dưới...\n\nVí dụ:\n  • Tiếng Việt: Xin chào các bạn\n  • Tiếng Anh: Hello, how are you?\n  • Tiếng Trung: 你好，你好吗？\n  • Tiếng Nhật: こんにちは\n  • Tiếng Hàn: 안녕하세요",
                         elem_classes="input-card")
 
-                    vi_lang = gr.Dropdown(label="Ngôn ngữ đầu ra", choices=_VI_LANGUAGES,
-                        value="Auto", allow_custom_value=False, elem_classes="input-card",
+                    vi_lang = gr.Dropdown(label="Ngôn ngữ đầu ra", choices=_VI_LANGUAGES_DISPLAY,
+                        value="Auto (Tự nhận diện)", allow_custom_value=False, elem_classes="input-card",
                         info="Chọn đúng ngôn ngữ để phát âm chuẩn nhất!")
 
                     gr.HTML('<div class="section-title">🎭 Chọn giọng</div>')
@@ -238,7 +335,9 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
                     else:
                         parts.append("moderate pitch")
                 instruct = ", ".join(parts) if parts else None
-                language = lang if (lang and lang != "Auto") else None
+                # Chuyen display name thanh language code
+                language = _DISPLAY_TO_CODE.get(lang, None)
+                if language == "Auto": language = None
                 gen_config = OmniVoiceGenerationConfig(num_step=int(ns or 32),
                     guidance_scale=float(gs) if gs is not None else 2.0,
                     denoise=True, preprocess_prompt=True, postprocess_output=True)
@@ -279,8 +378,8 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
                         placeholder="Để trống sẽ tự động nhận dạng bằng AI",
                         elem_classes="input-card")
 
-                    vc_lang = gr.Dropdown(label="Ngôn ngữ đầu ra", choices=_VI_LANGUAGES,
-                        value="Auto", allow_custom_value=False, elem_classes="input-card")
+                    vc_lang = gr.Dropdown(label="Ngôn ngữ đầu ra", choices=_VI_LANGUAGES_DISPLAY,
+                        value="Auto (Tự nhận diện)", allow_custom_value=False, elem_classes="input-card")
 
                     with gr.Accordion("⚙️ Cài đặt nâng cao", open=False):
                         with gr.Row():
@@ -337,8 +436,8 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
                     vd_custom = gr.Textbox(label="Hoặc tự nhập mô tả (tiếng ANH)",
                         lines=2, placeholder="VD: female, young, high pitch",
                         elem_classes="input-card")
-                    vd_lang = gr.Dropdown(label="Ngôn ngữ đầu ra", choices=_VI_LANGUAGES,
-                        value="Auto", allow_custom_value=False, elem_classes="input-card")
+                    vd_lang = gr.Dropdown(label="Ngôn ngữ đầu ra", choices=_VI_LANGUAGES_DISPLAY,
+                        value="Auto (Tự nhận diện)", allow_custom_value=False, elem_classes="input-card")
 
                     with gr.Accordion("⚙️ Cài đặt nâng cao", open=False):
                         with gr.Row():
