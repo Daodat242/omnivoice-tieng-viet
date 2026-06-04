@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""OmniVoice - Chuyen van ban thanh giong noi (HuggingFace Spaces)"""
+"""OmniVoice - Chuyển văn bản thành giọng nói (HuggingFace Spaces)"""
 
 import sys
 import io
@@ -12,40 +12,40 @@ import numpy as np
 import soundfile as sf
 from omnivoice import OmniVoice, OmniVoiceGenerationConfig
 
-# Tai model
-print("Dang tai model OmniVoice...")
+# Tải model
+print("Đang tải model OmniVoice...")
 model = OmniVoice.from_pretrained(
     "k2-fsa/OmniVoice",
     device_map="cuda:0" if torch.cuda.is_available() else "cpu",
     dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
 )
-print("Model da tai!")
+print("Model đã tải!")
 
-# Map giong tieng Viet sang instruct
+# Ánh xạ giọng tiếng Việt sang instruct
 VOICE_MAP = {
-    "Tu dong": None,
-    "Nam - Trung nien": "male, middle-aged, moderate pitch",
-    "Nam - Tre tuoi": "male, young adult, moderate pitch",
-    "Nam - Gia": "male, elderly, low pitch",
-    "Nam - Thieu nien": "male, teenager, high pitch",
-    "Nu - Trung nien": "female, middle-aged, moderate pitch",
-    "Nu - Tre tuoi": "female, young adult, moderate pitch",
-    "Nu - Gia": "female, elderly, low pitch",
-    "Nu - Thieu nien": "female, teenager, high pitch",
-    "Tre em": "child, moderate pitch",
-    "Thi tham (Nam)": "male, whisper",
-    "Thi tham (Nu)": "female, whisper",
+    "Tự động": None,
+    "Nam - Trung niên": "male, middle-aged, moderate pitch",
+    "Nam - Trẻ tuổi": "male, young adult, moderate pitch",
+    "Nam - Già": "male, elderly, low pitch",
+    "Nam - Thiếu niên": "male, teenager, high pitch",
+    "Nữ - Trung niên": "female, middle-aged, moderate pitch",
+    "Nữ - Trẻ tuổi": "female, young adult, moderate pitch",
+    "Nữ - Già": "female, elderly, low pitch",
+    "Nữ - Thiếu niên": "female, teenager, high pitch",
+    "Trẻ em": "child, moderate pitch",
+    "Thì thầm (Nam)": "male, whisper",
+    "Thì thầm (Nữ)": "female, whisper",
 }
 
 def generate_speech(text, voice_type, speed, num_steps):
-    """Chuyen van ban thanh giong noi"""
+    """Chuyển văn bản thành giọng nói"""
     if not text or not text.strip():
-        return None, "Vui long nhap van ban!"
+        return None, "Vui lòng nhập văn bản!"
 
-    # Lay instruct tu voice map
+    # Lấy instruct từ voice map
     instruct = VOICE_MAP.get(voice_type)
 
-    # Tao generation config
+    # Tạo generation config
     gen_config = OmniVoiceGenerationConfig(
         num_step=int(num_steps),
         denoise=True,
@@ -68,52 +68,52 @@ def generate_speech(text, voice_type, speed, num_steps):
     try:
         audio = model.generate(**kw)
         waveform = (audio[0] * 32767).astype(np.int16)
-        return (24000, waveform), "Hoan tat!"
+        return (24000, waveform), "Hoàn tất!"
     except Exception as e:
-        return None, f"Loi: {str(e)}"
+        return None, f"Lỗi: {str(e)}"
 
-# Tao giao dien
-with gr.Blocks(title="OmniVoice - Tieng Viet") as demo:
+# Tạo giao diện
+with gr.Blocks(title="OmniVoice - Tiếng Việt") as demo:
     gr.Markdown("""
-# OmniVoice - Chuyen van ban thanh giong noi
+# OmniVoice - Chuyển văn bản thành giọng nói
 
-Mô hình AI ho tro **600+ ngon ngu**, bao gom **tieng Viet**.
+Mô hình AI hỗ trợ **hơn 600 ngôn ngữ**, bao gồm **tiếng Việt**.
 
-**Huong dan:**
-1. Nhap van ban tieng Viet
-2. Chon giong noi
-3. Nhan "Tao giong" va cho ket qua
+**Hướng dẫn:**
+1. Nhập văn bản tiếng Việt
+2. Chọn giọng nói
+3. Nhấn "Tạo giọng" và chờ kết quả
 """)
 
     with gr.Row():
         with gr.Column(scale=1):
             text_input = gr.Textbox(
-                label="Nhap van ban tieng Viet",
+                label="Nhập văn bản tiếng Việt",
                 lines=5,
-                placeholder="VD: Xin chao cac ban. Hom nay chung ta hoc ve AI.",
+                placeholder="VD: Xin chào các bạn. Hôm nay chúng ta học về AI.",
             )
 
             voice_dropdown = gr.Dropdown(
-                label="Chon giong noi",
+                label="Chọn giọng nói",
                 choices=list(VOICE_MAP.keys()),
-                value="Tu dong",
+                value="Tự động",
             )
 
             with gr.Row():
                 speed_slider = gr.Slider(
                     0.5, 1.5, value=1.0, step=0.1,
-                    label="Toc do",
+                    label="Tốc độ",
                 )
                 steps_slider = gr.Slider(
                     4, 64, value=32, step=4,
-                    label="So buoc (thap = nhanh)",
+                    label="Số bước (thấp = nhanh)",
                 )
 
-            generate_btn = gr.Button("Tao giong", variant="primary")
+            generate_btn = gr.Button("Tạo giọng", variant="primary")
 
         with gr.Column(scale=1):
-            audio_output = gr.Audio(label="Ket qua", type="numpy")
-            status_output = gr.Textbox(label="Trang thai", interactive=False)
+            audio_output = gr.Audio(label="Kết quả", type="numpy")
+            status_output = gr.Textbox(label="Trạng thái", interactive=False)
 
     generate_btn.click(
         generate_speech,
@@ -123,11 +123,11 @@ Mô hình AI ho tro **600+ ngon ngu**, bao gom **tieng Viet**.
 
     gr.Markdown("""
 ---
-**Luu y:**
-- Van ban ngan (< 100 tu) se chay nhanh hon
-- So buoc thap (4-16) = nhanh hon, chat luong kem hon
-- So buoc cao (32-64) = cham hon, chat luong tot hon
-- Tai [OmniVoice](https://github.com/k2-fsa/OmniVoice) boi Xiaomi AI Lab
+**Lưu ý:**
+- Văn bản ngắn (< 100 từ) sẽ chạy nhanh hơn
+- Số bước thấp (4-16) = nhanh hơn, chất lượng kém hơn
+- Số bước cao (32-64) = chậm hơn, chất lượng tốt hơn
+-由 [OmniVoice](https://github.com/k2-fsa/OmniVoice) tạo bởi Xiaomi AI Lab
 """)
 
 if __name__ == "__main__":
