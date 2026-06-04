@@ -187,12 +187,12 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
                 with gr.Column(scale=1):
                     gr.HTML('<div class="section-title">📝 Văn bản (đa ngôn ngữ)</div>')
                     vi_text = gr.Textbox(label="", lines=5, show_label=False,
-                        placeholder="Nhập văn bản bất kỳ ngôn ngữ nào...\nVD: Xin chào / Hello / 你好 / こんにちは / 안녕하세요",
+                        placeholder="Nhập văn bản và CHỌN NGÔN NGỮ bên dưới...\n\nVí dụ:\n  • Tiếng Việt: Xin chào các bạn\n  • Tiếng Anh: Hello, how are you?\n  • Tiếng Trung: 你好，你好吗？\n  • Tiếng Nhật: こんにちは\n  • Tiếng Hàn: 안녕하세요",
                         elem_classes="input-card")
 
-                    vi_lang = gr.Dropdown(label="Ngôn ngữ", choices=_VI_LANGUAGES,
+                    vi_lang = gr.Dropdown(label="Ngôn ngữ đầu ra", choices=_VI_LANGUAGES,
                         value="Auto", allow_custom_value=False, elem_classes="input-card",
-                        info="Để Auto để tự nhận diện ngôn ngữ")
+                        info="Chọn đúng ngôn ngữ để phát âm chuẩn nhất!")
 
                     gr.HTML('<div class="section-title">🎭 Chọn giọng</div>')
                     vi_voice_type = gr.Dropdown(label="Giọng nói", value="Tự động",
