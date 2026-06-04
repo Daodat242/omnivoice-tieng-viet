@@ -178,17 +178,21 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
 
     with gr.Tabs():
         # ==========================================================
-        # TAB 1: TIẾNG VIỆT
+        # TAB 1: TTS - CHUYỂN VĂN BẢN ĐA NGÔN NGỮ
         # ==========================================================
-        with gr.TabItem("🇻🇳 Tiếng Việt", id="vi"):
-            gr.HTML('<div class="step-box"><span class="step-num">1</span><span class="step-text">Nhập văn bản</span><span class="step-num">2</span><span class="step-text">Chọn giọng</span><span class="step-num">3</span><span class="step-text">Nhấn Tạo giọng</span></div>')
+        with gr.TabItem("⚡ TTS", id="tts"):
+            gr.HTML('<div class="step-box"><span class="step-num">1</span><span class="step-text">Nhập văn bản</span><span class="step-num">2</span><span class="step-text">Chọn ngôn ngữ & giọng</span><span class="step-num">3</span><span class="step-text">Nhấn Tạo giọng</span></div>')
 
             with gr.Row():
                 with gr.Column(scale=1):
-                    gr.HTML('<div class="section-title">📝 Văn bản</div>')
+                    gr.HTML('<div class="section-title">📝 Văn bản (đa ngôn ngữ)</div>')
                     vi_text = gr.Textbox(label="", lines=5, show_label=False,
-                        placeholder="Nhập nội dung tiếng Việt bạn muốn chuyển thành giọng nói...",
+                        placeholder="Nhập văn bản bất kỳ ngôn ngữ nào...\nVD: Xin chào / Hello / 你好 / こんにちは / 안녕하세요",
                         elem_classes="input-card")
+
+                    vi_lang = gr.Dropdown(label="Ngôn ngữ", choices=_VI_LANGUAGES,
+                        value="Auto", allow_custom_value=False, elem_classes="input-card",
+                        info="Để Auto để tự nhận diện ngôn ngữ")
 
                     gr.HTML('<div class="section-title">🎭 Chọn giọng</div>')
                     vi_voice_type = gr.Dropdown(label="Giọng nói", value="Tự động",
@@ -218,9 +222,9 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
                     vi_status = gr.Textbox(label="", lines=1, interactive=False, show_label=False,
                         elem_classes="output-card", placeholder="Trạng thái sẽ hiển thị ở đây...")
 
-            def _vietnamese_fn(text, voice_type, pitch, volume, sp, du, ns, gs):
+            def _vietnamese_fn(text, lang, voice_type, pitch, volume, sp, du, ns, gs):
                 if not text or not text.strip():
-                    return None, "⚠️ Vui lòng nhập văn bản tiếng Việt."
+                    return None, "⚠️ Vui lòng nhập văn bản"
                 parts = []
                 if voice_type and voice_type != "Tự động" and voice_type in _VOICE_PRESETS:
                     parts.append(_VOICE_PRESETS[voice_type])
@@ -234,10 +238,11 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
                     else:
                         parts.append("moderate pitch")
                 instruct = ", ".join(parts) if parts else None
+                language = lang if (lang and lang != "Auto") else None
                 gen_config = OmniVoiceGenerationConfig(num_step=int(ns or 32),
                     guidance_scale=float(gs) if gs is not None else 2.0,
                     denoise=True, preprocess_prompt=True, postprocess_output=True)
-                kw = dict(text=text.strip(), language="vi", generation_config=gen_config)
+                kw = dict(text=text.strip(), language=language, generation_config=gen_config)
                 if instruct: kw["instruct"] = instruct
                 if sp is not None and float(sp) != 1.0: kw["speed"] = float(sp)
                 if du is not None and float(du) > 0: kw["duration"] = float(du)
@@ -245,13 +250,12 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
                     audio = model.generate(**kw)
                 except Exception as e:
                     return None, f"❌ Lỗi: {type(e).__name__}: {e}"
-                # Dieu chinh am luong
                 vol = float(volume) if volume else 1.0
                 waveform = (audio[0] * 32767 * vol).astype(np.int16)
                 return (sampling_rate, waveform), "✅ Hoàn tất! Nhấn ▶ để nghe"
 
             vi_btn.click(_vietnamese_fn,
-                inputs=[vi_text, vi_voice_type, vi_pitch, vi_vol, vi_sp, vi_du, vi_ns, vi_gs],
+                inputs=[vi_text, vi_lang, vi_voice_type, vi_pitch, vi_vol, vi_sp, vi_du, vi_ns, vi_gs],
                 outputs=[vi_audio, vi_status])
 
         # ==========================================================
