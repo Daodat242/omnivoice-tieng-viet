@@ -4,7 +4,6 @@ emoji: 🎙️
 colorFrom: blue
 colorTo: green
 sdk: gradio
-sdk_version: 5.12.0
 app_file: app.py
 pinned: false
 license: apache-2.0
@@ -15,14 +14,14 @@ license: apache-2.0
 Mô hình AI chuyen van ban thanh giong noi ho tro **600+ ngon ngu**, bao gom **tieng Viet**.
 
 ## Tinh nang
-- Chuyen van ban tieng Viet thanh giong noi
+- Chuyen van ban thanh giong noi da ngon ngu
 - Chon giong Nam/Nu/Tre em/Thi tham
-- Dieu chinh toc do va chat luong
+- Dieu chinh toc do, am luong va chat luong
 - Ho tro 600+ ngon ngu
 
 ## Su dung
-1. Nhap van ban tieng Viet
-2. Chon giong noi
+1. Nhap van ban
+2. Chon ngon ngu va giong noi
 3. Nhan "Tao giong"
 
 ## Tai lieu
