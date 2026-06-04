@@ -270,6 +270,7 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
                     gr.HTML('<div class="section-title">🎧 Audio tham chiếu</div>')
                     vc_ref_audio = gr.Audio(label="Tải lên file audio (3-10 giây, tùy chọn)",
                         type="filepath", elem_classes="input-card")
+                    gr.HTML('<div style="font-size:0.85em;color:#6b7280;margin:-5px 0 10px 0;">💡 3-10 giây là tối ưu. Audio >20s sẽ bị cắt tự động. Không có audio = mô hình tự chọn giọng.</div>')
                     vc_ref_text = gr.Textbox(label="Nội dung trong audio (tùy chọn)", lines=2,
                         placeholder="Để trống sẽ tự động nhận dạng bằng AI",
                         elem_classes="input-card")
