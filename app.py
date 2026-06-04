@@ -198,6 +198,10 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
                         choices=["Không chọn"] + list(_VI_PITCH_MAP.keys()),
                         elem_classes="input-card")
 
+                    gr.HTML('<div class="section-title">🔊 Âm lượng</div>')
+                    vi_vol = gr.Slider(0.1, 3.0, value=1.0, step=0.1, label="Âm lượng",
+                        info="1.0 = bình thường, >1 to hơn, <1 nhỏ hơn")
+
                     with gr.Accordion("⚙️ Cài đặt nâng cao", open=False):
                         with gr.Row():
                             vi_sp = gr.Slider(0.5, 1.5, value=1.0, step=0.05, label="Tốc độ")
@@ -214,7 +218,7 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
                     vi_status = gr.Textbox(label="", lines=1, interactive=False, show_label=False,
                         elem_classes="output-card", placeholder="Trạng thái sẽ hiển thị ở đây...")
 
-            def _vietnamese_fn(text, voice_type, pitch, sp, du, ns, gs):
+            def _vietnamese_fn(text, voice_type, pitch, volume, sp, du, ns, gs):
                 if not text or not text.strip():
                     return None, "⚠️ Vui lòng nhập văn bản tiếng Việt."
                 parts = []
@@ -241,11 +245,13 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
                     audio = model.generate(**kw)
                 except Exception as e:
                     return None, f"❌ Lỗi: {type(e).__name__}: {e}"
-                waveform = (audio[0] * 32767).astype(np.int16)
+                # Dieu chinh am luong
+                vol = float(volume) if volume else 1.0
+                waveform = (audio[0] * 32767 * vol).astype(np.int16)
                 return (sampling_rate, waveform), "✅ Hoàn tất! Nhấn ▶ để nghe"
 
             vi_btn.click(_vietnamese_fn,
-                inputs=[vi_text, vi_voice_type, vi_pitch, vi_sp, vi_du, vi_ns, vi_gs],
+                inputs=[vi_text, vi_voice_type, vi_pitch, vi_vol, vi_sp, vi_du, vi_ns, vi_gs],
                 outputs=[vi_audio, vi_status])
 
         # ==========================================================
