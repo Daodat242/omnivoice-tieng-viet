@@ -195,59 +195,87 @@ def _gen_core(text, language, ref_audio, instruct, num_step, guidance_scale,
     return (sampling_rate, waveform), "✅ Hoàn tất!"
 
 # ============================================================
+# API KEY SYSTEM
+# ============================================================
+import hashlib
+import secrets
+
+_API_SECRET = "omnivoice_hf_2024_secret_key"
+
+_PURPOSE_MAP = {
+    "TTS cho ứng dụng di động": "mobile_tts",
+    "TTS cho website": "web_tts",
+    "Clone giọng cho chatbot": "chatbot_clone",
+    "Thiết kế giọng cho video": "video_design",
+    "Tích hợp hệ thống giáo dục": "education",
+    "Sử dụng cá nhân": "personal",
+}
+
+def generate_api_key(name, purpose):
+    purpose_code = _PURPOSE_MAP.get(purpose, "general")
+    raw = f"{name.strip().lower()}_{purpose_code}_{_API_SECRET}"
+    key_hash = hashlib.sha256(raw.encode()).hexdigest()[:32]
+    return f"OV-{purpose_code.upper()[:8]}-{key_hash[:16].upper()}"
+
+def validate_api_key(api_key):
+    if not api_key or not api_key.startswith("OV-"):
+        return False, "API key không hợp lệ"
+    return True, "OK"
+
+# ============================================================
 # UI
 # ============================================================
 CUSTOM_CSS = """
 /* === MAIN === */
 .gradio-container {max-width: 900px !important; margin: auto !important; padding-top: 10px !important;}
-main {background: linear-gradient(135deg, #7c3aed 0%, #6366f1 50%, #818cf8 100%) !important; min-height: 100vh;}
+main {background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important; min-height: 100vh;}
 .gradio-container {background: rgba(255,255,255,0.98) !important; border-radius: 20px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;}
 
 /* === HEADER === */
 .header-title {text-align: center; font-size: 2em !important; font-weight: 800 !important;
-    color: #7c3aed !important; margin-bottom: 0 !important; padding-top: 15px;}
+    color: #2563eb !important; margin-bottom: 0 !important; padding-top: 15px;}
 .header-sub {text-align: center; color: #6b7280; font-size: 0.95em !important; margin-top: 5px !important;}
 .header-badge {text-align: center; margin-top: 10px !important; display: flex !important; justify-content: center !important; gap: 8px !important; flex-wrap: wrap !important;}
-.header-badge span {display: inline-block; background: #f3f0ff; color: #7c3aed; padding: 6px 16px;
-    border-radius: 20px; font-size: 0.85em !important; font-weight: 600; border: 1px solid #e0d4fc;}
+.header-badge span {display: inline-block; background: #eff6ff; color: #2563eb; padding: 6px 16px;
+    border-radius: 20px; font-size: 0.85em !important; font-weight: 600; border: 1px solid #bfdbfe;}
 
 /* === TABS === */
 .tabs > .tab-nav {border-bottom: 2px solid #e5e7eb !important; gap: 0 !important;}
 .tabs > .tab-nav > button {font-size: 0.95em !important; font-weight: 600 !important; padding: 12px 20px !important;
     border-bottom: 3px solid transparent !important; border-radius: 10px 10px 0 0 !important;
     transition: all 0.2s !important; color: #6b7280 !important;}
-.tabs > .tab-nav > button.selected {color: #7c3aed !important; border-bottom-color: #7c3aed !important;
-    background: rgba(124,58,237,0.05) !important;}
+.tabs > .tab-nav > button.selected {color: #2563eb !important; border-bottom-color: #2563eb !important;
+    background: rgba(37,99,235,0.05) !important;}
 .tabs > .tab-nav > button:hover:not(.selected) {color: #374151 !important; background: rgba(0,0,0,0.02) !important;}
 
 /* === BUTTONS === */
-.primary-btn {background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%) !important;
+.primary-btn {background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important;
     color: white !important; font-size: 1.15em !important; font-weight: 700 !important;
     padding: 16px 60px !important; border: none !important; border-radius: 14px !important;
-    box-shadow: 0 4px 15px rgba(124,58,237,0.4) !important; transition: all 0.3s !important;
+    box-shadow: 0 4px 15px rgba(37,99,235,0.4) !important; transition: all 0.3s !important;
     letter-spacing: 0.5px !important; width: 100% !important; max-width: 400px !important; margin: 10px auto !important; display: block !important;}
-.primary-btn:hover {transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(124,58,237,0.5) !important;}
+.primary-btn:hover {transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(37,99,235,0.5) !important;}
 .primary-btn:active {transform: translateY(0) !important;}
 
 /* === INPUTS === */
 .input-card {background: #fafafa !important; border: 1px solid #e5e7eb !important; border-radius: 12px !important;
     padding: 16px !important; margin: 6px 0 !important;}
-.output-card {background: #f5f3ff !important; border: 1px solid #e0d4fc !important; border-radius: 12px !important;
+.output-card {background: #eff6ff !important; border: 1px solid #bfdbfe !important; border-radius: 12px !important;
     padding: 16px !important; margin: 6px 0 !important;}
 section {border: none !important;}
 
 /* === STEP INDICATOR === */
 .step-box {display: flex; align-items: center; gap: 8px; margin: 10px 0 15px 0; padding: 10px 16px;
-    background: #f8f5ff; border-radius: 10px; border-left: 4px solid #7c3aed;}
+    background: #f0f7ff; border-radius: 10px; border-left: 4px solid #2563eb;}
 .step-num {display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px;
-    background: #7c3aed; color: white; border-radius: 50%; font-weight: 700; font-size: 0.8em; flex-shrink: 0;}
+    background: #2563eb; color: white; border-radius: 50%; font-weight: 700; font-size: 0.8em; flex-shrink: 0;}
 .step-text {color: #374151; font-size: 0.9em;}
 
-/* === SECTION BADGE (purple background) === */
-.section-badge {display: inline-block; background: linear-gradient(135deg, #7c3aed, #6366f1) !important;
+/* === SECTION BADGE (blue background) === */
+.section-badge {display: inline-block; background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
     color: white !important; font-size: 1em !important; font-weight: 700 !important;
     padding: 8px 20px !important; border-radius: 10px !important; margin: 12px 0 8px 0 !important;
-    box-shadow: 0 2px 8px rgba(124,58,237,0.3);}
+    box-shadow: 0 2px 8px rgba(37,99,235,0.3);}
 
 /* === STATUS === */
 .status-ok {background: #ecfdf5 !important; border: 1px solid #a7f3d0 !important; border-radius: 10px !important;}
@@ -261,8 +289,13 @@ audio {border-radius: 10px !important;}
     margin: 12px 0 6px 0 !important; padding-bottom: 4px !important; border-bottom: 2px solid #e5e7eb;}
 
 /* === RESULT CARD === */
-.result-card {background: #f5f3ff !important; border: 2px solid #e0d4fc !important; border-radius: 16px !important;
+.result-card {background: #eff6ff !important; border: 2px solid #bfdbfe !important; border-radius: 16px !important;
     padding: 20px !important; margin: 8px 0 !important;}
+
+/* === API KEY CARD === */
+.api-key-box {background: #f0fdf4 !important; border: 2px solid #86efac !important; border-radius: 12px !important;
+    padding: 16px !important; margin: 10px 0 !important; font-family: monospace !important; font-size: 1.1em !important;
+    word-break: break-all !important; color: #166534 !important;}
 """
 
 with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
@@ -532,120 +565,72 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
 """)
 
         # ==========================================================
-        # TAB 5: API
+        # TAB 5: API - TẠO MÃ
         # ==========================================================
-        with gr.TabItem("🔌 API", id="api"):
-            gr.Markdown("""
-### 🌐 API — Dùng OmniVoice từ ứng dụng của bạn
+        with gr.TabItem("🔑 Tạo API Key", id="api"):
+            gr.HTML("""
+            <div style="text-align:center; margin-bottom:15px;">
+                <div style="font-size:1.3em; font-weight:700; color:#2563eb;">🔑 Tạo mã API</div>
+                <div style="color:#6b7280; font-size:0.9em;">Nhập thông tin, nhận mã, dùng ngay</div>
+            </div>
+            """)
 
-OmniVoice cung cấp API miễn phí để bạn tích hợp chuyển văn bản thành giọng nói vào ứng dụng của mình.
+            with gr.Row():
+                with gr.Column(scale=1):
+                    gr.HTML('<div class="section-badge">📝 Thông tin</div>')
+                    api_name_input = gr.Textbox(label="Tên người dùng", lines=1,
+                        placeholder="VD: Nguyễn Văn A", elem_classes="input-card")
+                    api_purpose = gr.Dropdown(label="Mục đích sử dụng",
+                        choices=list(_PURPOSE_MAP.keys()),
+                        value="Sử dụng cá nhân", elem_classes="input-card")
+                    api_btn = gr.Button("🔑 TẠO MÃ", variant="primary", elem_classes="primary-btn")
 
-**Base URL:** `https://daodat242-omnivoice-tieng-viet.hf.space`
-""")
+                with gr.Column(scale=1):
+                    gr.HTML('<div class="section-badge">📋 Mã của bạn</div>')
+                    api_key_output = gr.Textbox(label="API Key", lines=1, interactive=False,
+                        elem_classes="api-key-box", placeholder="Nhập thông tin bên trái và nhấn Tạo mã...")
+                    api_status = gr.Textbox(label="", lines=1, interactive=False, show_label=False,
+                        elem_classes="output-card", placeholder="Trạng thái...")
+
+            def _gen_api_key(name, purpose):
+                if not name or not name.strip():
+                    return "", "⚠️ Vui lòng nhập tên"
+                key = generate_api_key(name, purpose)
+                return key, f"✅ Mã đã tạo! Gửi mã này cho bên cần dùng."
+
+            api_btn.click(_gen_api_key, inputs=[api_name_input, api_purpose],
+                outputs=[api_key_output, api_status])
+
+            gr.HTML('<div style="margin:20px 0 10px 0;"><div class="section-badge">📖 Cách dùng cho bên nhận mã</div></div>')
 
             with gr.Tabs():
-                # --- Python ---
                 with gr.TabItem("🐍 Python"):
                     gr.Markdown("""
-#### Cách 1: Dùng `gradio_client` (đơn giản nhất)
-```bash
-pip install gradio_client
-```
 ```python
 from gradio_client import Client
 
 client = Client("Daodat242/omnivoice-tieng-viet")
 
-# TTS cơ bản
 result = client.predict(
-    text="Xin chào các bạn, chúc mọi người một ngày tốt lành!",
-    language="Tiếng Việt",
-    voice_type="Nam - Trẻ tuổi",
-    pitch="Không chọn",
-    volume=1.0,
-    speed=1.0,
-    duration=None,
-    num_step=32,
-    guidance_scale=2.0,
-    api_name="/tts"
+    text="Xin chào các bạn!",
+    lang="Tiếng Việt",
+    api_name="/_vietnamese_fn"
 )
 
-print(result)  # (sample_rate, numpy_array) hoặc đường dẫn file audio
+# result[0] = file audio, result[1] = trạng thái
+print(result[1])
 ```
-
-#### Cách 2: Dùng `requests` (REST API)
-```python
-import requests
-import json
-
-url = "https://daodat242-omnivoice-tieng-viet.hf.space/_vietnamese_fn"
-payload = {
-    "data": [
-        "Xin chào!",           # text
-        "Tiếng Việt",          # language
-        "Tự động",            # voice_type
-        "Không chọn",         # pitch
-        1.0,                   # volume
-        1.0,                   # speed
-        None,                  # duration
-        32,                    # num_step
-        2.0                    # guidance_scale
-    ]
-}
-response = requests.post(url, json=payload)
-print(response.json())
-```
-""")
-
-                # --- cURL ---
+                    """)
                 with gr.TabItem("⬛ cURL"):
                     gr.Markdown("""
-#### TTS cơ bản
 ```bash
 curl -X POST "https://daodat242-omnivoice-tieng-viet.hf.space/_vietnamese_fn" \\
   -H "Content-Type: application/json" \\
-  -d '{
-    "data": [
-      "Xin chào các bạn!",
-      "Tiếng Việt",
-      "Nam - Trẻ tuổi",
-      "Không chọn",
-      1.0,
-      1.0,
-      null,
-      32,
-      2.0
-    ]
-  }'
+  -d '{"data": ["Xin chào!", "Tiếng Việt", "Tự động", "Không chọn", 1.0, 1.0, null, 32, 2.0]}'
 ```
-
-#### Clone giọng nói
-```bash
-curl -X POST "https://daodat242-omnivoice-tieng-viet.hf.space/_clone_fn" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "data": [
-      "Xin chào!",
-      "Tiếng Việt",
-      null,
-      null,
-      32,
-      2.0,
-      true,
-      1.0,
-      null,
-      true,
-      true,
-      null
-    ]
-  }'
-```
-""")
-
-                # --- JavaScript ---
+                    """)
                 with gr.TabItem("🟨 JavaScript"):
                     gr.Markdown("""
-#### Node.js / Browser
 ```javascript
 const response = await fetch(
   "https://daodat242-omnivoice-tieng-viet.hf.space/_vietnamese_fn",
@@ -653,108 +638,23 @@ const response = await fetch(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      data: [
-        "Xin chào các bạn!",    // text
-        "Tiếng Việt",           // language
-        "Nam - Trẻ tuổi",      // voice_type
-        "Không chọn",          // pitch
-        1.0,                    // volume
-        1.0,                    // speed
-        null,                   // duration
-        32,                     // num_step
-        2.0                     // guidance_scale
-      ]
+      data: ["Xin chào!", "Tiếng Việt", "Tự động", "Không chọn", 1.0, 1.0, null, 32, 2.0]
     })
   }
 );
-
 const result = await response.json();
-console.log(result);
 ```
-""")
-
-                # --- Tham số ---
-                with gr.TabItem("📋 Tham số"):
-                    gr.Markdown("""
-#### Endpoint: `/tts`
-
-| # | Tham số | Kiểu | Mặc định | Mô tả |
-|---|---------|------|----------|-------|
-| 0 | `text` | string | *bắt buộc* | Văn bản cần chuyển thành giọng nói |
-| 1 | `language` | string | `"Auto"` | Ngôn ngữ đầu ra (xem danh sách bên dưới) |
-| 2 | `voice_type` | string | `"Tự động"` | Loại giọng: `Nam - Trẻ tuổi`, `Nữ - Trung niên`... |
-| 3 | `pitch` | string | `"Không chọn"` | Âm vực: `Thấp`, `Trung bình`, `Cao`... |
-| 4 | `volume` | float | `1.0` | Âm lượng (0.1 - 3.0) |
-| 5 | `speed` | float | `1.0` | Tốc độ (0.5 - 1.5) |
-| 6 | `duration` | float/null | `null` | Thời lượng cố định (giây), bỏ qua speed |
-| 7 | `num_step` | int | `32` | Bước suy luận (4-64) |
-| 8 | `guidance_scale` | float | `2.0` | CFG (0.0-4.0) |
-
-#### Endpoint: `/clone`
-
-| # | Tham số | Kiểu | Mặc định | Mô tả |
-|---|---------|------|----------|-------|
-| 0 | `text` | string | *bắt buộc* | Văn bản cần nói |
-| 1 | `language` | string | `"Auto"` | Ngôn ngữ đầu ra |
-| 2 | `ref_audio` | file/null | `null` | File audio tham chiếu (3-10 giây) |
-| 3 | `ref_text` | string/null | `null` | Nội dung trong audio (để trống = tự nhận dạng) |
-| 4 | `num_step` | int | `32` | Bước suy luận |
-| 5 | `guidance_scale` | float | `2.0` | CFG |
-| 6 | `denoise` | bool | `true` | Khử nhiễu |
-| 7 | `speed` | float | `1.0` | Tốc độ |
-| 8 | `duration` | float/null | `null` | Thời lượng cố định |
-| 9 | `preprocess_prompt` | bool | `true` | Tiền xử lý |
-| 10 | `postprocess_output` | bool | `true` | Xử lý đầu ra |
-| 11 | `instruct` | string/null | `null` | Chỉ dẫn giọng nói (tiếng ANH) |
-
-#### Endpoint: `/design`
-
-| # | Tham số | Kiểu | Mặc định | Mô tả |
-|---|---------|------|----------|-------|
-| 0 | `text` | string | *bắt buộc* | Văn bản cần nói |
-| 1 | `language` | string | `"Auto"` | Ngôn ngữ đầu ra |
-| 2 | `preset` | string | `"Không chọn"` | Loại giọng (Nam/Nữ, Trẻ/Già...) |
-| 3 | `accent` | string | `"Không chọn"` | Giọng regional (Mỹ, Anh, Úc...) |
-| 4 | `dialect` | string | `"Không chọn"` | Phương ngữ Trung Quốc |
-| 5 | `custom` | string | `""` | Mô tả tùy chỉnh (tiếng ANH) |
-| 6 | `num_step` | int | `32` | Bước suy luận |
-| 7 | `guidance_scale` | float | `2.0` | CFG |
-| 8 | `denoise` | bool | `true` | Khử nhiễu |
-| 9 | `speed` | float | `1.0` | Tốc độ |
-| 10 | `duration` | float/null | `null` | Thời lượng cố định |
-| 11 | `preprocess_prompt` | bool | `true` | Tiền xử lý |
-| 12 | `postprocess_output` | bool | `true` | Xử lý đầu ra |
-""")
-
-                # --- Ngôn ngữ ---
-                with gr.TabItem("🌐 Ngôn ngữ"):
-                    gr.Markdown("""
-OmniVoice hỗ trợ **600+ ngôn ngữ**. Dưới đây là các ngôn ngữ phổ biến:
-
-| Mã | Ngôn ngữ | Mã | Ngôn ngữ |
-|----|----------|----|----------|
-| `vi` | Tiếng Việt | `en` | English |
-| `zh` | 中文 (Trung Quốc) | `ja` | 日本語 (Nhật) |
-| `ko` | 한국어 (Hàn) | `fr` | Français (Pháp) |
-| `de` | Deutsch (Đức) | `es` | Español (Tây Ban Nha) |
-| `th` | ไทย (Thái) | `id` | Bahasa Indonesia |
-| `pt` | Português (BĐN) | `it` | Italiano (Ý) |
-| `ru` | Русский (Nga) | `ar` | Ả Rập |
-| `hi` | हिन्दी (Hindi) | `tr` | Türkçe (Thổ Nhĩ Kỳ) |
-
-> **Lưu ý:** Khi dùng API, truyền **tên hiển thị** (VD: `"Tiếng Việt"`) hoặc `null` cho Auto.
-""")
+                    """)
 
             gr.Markdown("""
 ---
-### 📌 Ghi chú quan trọng
+### 📌 Lưu ý
 
-- **Miễn phí:** API không mất phí, nhưng bị giới hạn tài nguyên (CPU)
-- **Tốc độ:** Mỗi yêu cầu mất 5-30 giây tùy độ dài văn bản
-- **Audio:** Trả về file audio (WAV) hoặc numpy array
-- **Lỗi:** Trả về `{"error": "..."}` nếu có lỗi
-- **Chi tiết:** Xem thêm tại [`docs/api.md`](https://github.com/Daodat242/omnivoice-tieng-viet/blob/main/docs/api.md)
-""")
+- **Miễn phí:** Không cần đăng ký, không mất phí
+- **Đơn giản:** Gửi mã cho bên cần dùng, họ dán vào code là chạy
+- **Tốc độ:** 5-30 giây mỗi lần tạo giọng
+- **Hạn chế:** Server CPU nên không chạy được同时 nhiều người
+            """)
 
 if __name__ == "__main__":
     demo.queue().launch()
