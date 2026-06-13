@@ -569,7 +569,7 @@ print(result)  # (sample_rate, numpy_array) hoặc đường dẫn file audio
 import requests
 import json
 
-url = "https://daodat242-omnivoice-tieng-viet.hf.space/api/tts"
+url = "https://daodat242-omnivoice-tieng-viet.hf.space/_vietnamese_fn"
 payload = {
     "data": [
         "Xin chào!",           # text
@@ -593,7 +593,7 @@ print(response.json())
                     gr.Markdown("""
 #### TTS cơ bản
 ```bash
-curl -X POST "https://daodat242-omnivoice-tieng-viet.hf.space/api/tts" \\
+curl -X POST "https://daodat242-omnivoice-tieng-viet.hf.space/_vietnamese_fn" \\
   -H "Content-Type: application/json" \\
   -d '{
     "data": [
@@ -612,7 +612,7 @@ curl -X POST "https://daodat242-omnivoice-tieng-viet.hf.space/api/tts" \\
 
 #### Clone giọng nói
 ```bash
-curl -X POST "https://daodat242-omnivoice-tieng-viet.hf.space/api/clone" \\
+curl -X POST "https://daodat242-omnivoice-tieng-viet.hf.space/_clone_fn" \\
   -H "Content-Type: application/json" \\
   -d '{
     "data": [
@@ -639,7 +639,7 @@ curl -X POST "https://daodat242-omnivoice-tieng-viet.hf.space/api/clone" \\
 #### Node.js / Browser
 ```javascript
 const response = await fetch(
-  "https://daodat242-omnivoice-tieng-viet.hf.space/api/tts",
+  "https://daodat242-omnivoice-tieng-viet.hf.space/_vietnamese_fn",
   {
     method: "POST",
     headers: { "Content-Type": "application/json" },

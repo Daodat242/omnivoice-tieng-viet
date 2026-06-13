@@ -16,13 +16,13 @@ Không cần. API hoàn toàn miễn phí và công khai.
 
 | Method | Endpoint | Mô tả |
 |--------|----------|-------|
-| `POST` | `/api/tts` | Chuyển văn bản thành giọng nói |
-| `POST` | `/api/clone` | Clone giọng nói từ audio tham chiếu |
-| `POST` | `/api/design` | Thiết kế giọng nói tùy chỉnh |
+| `POST` | `/_vietnamese_fn` | Chuyển văn bản thành giọng nói (TTS) |
+| `POST` | `/_clone_fn` | Clone giọng nói từ audio tham chiếu |
+| `POST` | `/_design_fn` | Thiết kế giọng nói tùy chỉnh |
 
 ---
 
-## 1. POST `/api/tts`
+## 1. POST `/_vietnamese_fn` (TTS)
 
 Chuyển văn bản thành giọng nói đa ngôn ngữ.
 
@@ -116,7 +116,7 @@ print(f"Sample rate: {sample_rate}, Length: {len(audio_data)}")
 ```python
 import requests
 
-url = "https://daodat242-omnivoice-tieng-viet.hf.space/api/tts"
+url = "https://daodat242-omnivoice-tieng-viet.hf.space/_vietnamese_fn"
 payload = {
     "data": [
         "Hello, how are you?",
@@ -139,7 +139,7 @@ print(result)
 #### cURL
 
 ```bash
-curl -X POST "https://daodat242-omnivoice-tieng-viet.hf.space/api/tts" \
+curl -X POST "https://daodat242-omnivoice-tieng-viet.hf.space/_vietnamese_fn" \
   -H "Content-Type: application/json" \
   -d '{
     "data": [
@@ -160,7 +160,7 @@ curl -X POST "https://daodat242-omnivoice-tieng-viet.hf.space/api/tts" \
 
 ```javascript
 const response = await fetch(
-  "https://daodat242-omnivoice-tieng-viet.hf.space/api/tts",
+  "https://daodat242-omnivoice-tieng-viet.hf.space/_vietnamese_fn",
   {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -186,7 +186,7 @@ console.log(result);
 
 ---
 
-## 2. POST `/api/clone`
+## 2. POST `/_clone_fn`
 
 Clone giọng nói từ file audio tham chiếu.
 
@@ -255,7 +255,7 @@ result = client.predict(
 
 ---
 
-## 3. POST `/api/design`
+## 3. POST `/_design_fn`
 
 Thiết kế giọng nói tùy chỉnh.
 
@@ -401,7 +401,7 @@ async def say(ctx, *, text: str):
     result = tts_client.predict(
         text=text,
         language="Tiếng Việt",
-        api_name="/tts"
+    api_name="/_vietnamese_fn"
     )
     # result[0] = (sample_rate, numpy_array)
     # Convert to audio file and send
@@ -419,7 +419,7 @@ bot.run("YOUR_BOT_TOKEN")
 ```javascript
 async function textToSpeech(text) {
   const response = await fetch(
-    "https://daodat242-omnivoice-tieng-viet.hf.space/api/tts",
+  "https://daodat242-omnivoice-tieng-viet.hf.space/_vietnamese_fn",
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
