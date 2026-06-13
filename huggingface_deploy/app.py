@@ -199,50 +199,55 @@ def _gen_core(text, language, ref_audio, instruct, num_step, guidance_scale,
 # ============================================================
 CUSTOM_CSS = """
 /* === MAIN === */
-.gradio-container {max-width: 1000px !important; margin: auto !important; padding-top: 10px !important;}
-main {background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; min-height: 100vh;}
-.gradio-container {background: rgba(255,255,255,0.97) !important; border-radius: 20px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;}
+.gradio-container {max-width: 900px !important; margin: auto !important; padding-top: 10px !important;}
+main {background: linear-gradient(135deg, #7c3aed 0%, #6366f1 50%, #818cf8 100%) !important; min-height: 100vh;}
+.gradio-container {background: rgba(255,255,255,0.98) !important; border-radius: 20px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;}
 
 /* === HEADER === */
-.header-title {text-align: center; font-size: 2.2em !important; font-weight: 800 !important;
-    background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent; margin-bottom: 0 !important; padding-top: 20px;}
-.header-sub {text-align: center; color: #6b7280; font-size: 1em !important; margin-top: 5px !important;}
-.header-badge {text-align: center; margin-top: 8px !important;}
-.header-badge span {display: inline-block; background: #f0f0ff; color: #667eea; padding: 4px 14px;
-    border-radius: 20px; font-size: 0.85em !important; margin: 0 4px; font-weight: 500;}
+.header-title {text-align: center; font-size: 2em !important; font-weight: 800 !important;
+    color: #7c3aed !important; margin-bottom: 0 !important; padding-top: 15px;}
+.header-sub {text-align: center; color: #6b7280; font-size: 0.95em !important; margin-top: 5px !important;}
+.header-badge {text-align: center; margin-top: 10px !important; display: flex !important; justify-content: center !important; gap: 8px !important; flex-wrap: wrap !important;}
+.header-badge span {display: inline-block; background: #f3f0ff; color: #7c3aed; padding: 6px 16px;
+    border-radius: 20px; font-size: 0.85em !important; font-weight: 600; border: 1px solid #e0d4fc;}
 
 /* === TABS === */
 .tabs > .tab-nav {border-bottom: 2px solid #e5e7eb !important; gap: 0 !important;}
-.tabs > .tab-nav > button {font-size: 1em !important; font-weight: 600 !important; padding: 12px 24px !important;
+.tabs > .tab-nav > button {font-size: 0.95em !important; font-weight: 600 !important; padding: 12px 20px !important;
     border-bottom: 3px solid transparent !important; border-radius: 10px 10px 0 0 !important;
     transition: all 0.2s !important; color: #6b7280 !important;}
-.tabs > .tab-nav > button.selected {color: #667eea !important; border-bottom-color: #667eea !important;
-    background: rgba(102,126,234,0.05) !important;}
+.tabs > .tab-nav > button.selected {color: #7c3aed !important; border-bottom-color: #7c3aed !important;
+    background: rgba(124,58,237,0.05) !important;}
 .tabs > .tab-nav > button:hover:not(.selected) {color: #374151 !important; background: rgba(0,0,0,0.02) !important;}
 
 /* === BUTTONS === */
-.primary-btn {background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    color: white !important; font-size: 1.1em !important; font-weight: 700 !important;
-    padding: 14px 40px !important; border: none !important; border-radius: 12px !important;
-    box-shadow: 0 4px 15px rgba(102,126,234,0.4) !important; transition: all 0.3s !important;
-    letter-spacing: 0.5px !important;}
-.primary-btn:hover {transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(102,126,234,0.5) !important;}
+.primary-btn {background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%) !important;
+    color: white !important; font-size: 1.15em !important; font-weight: 700 !important;
+    padding: 16px 60px !important; border: none !important; border-radius: 14px !important;
+    box-shadow: 0 4px 15px rgba(124,58,237,0.4) !important; transition: all 0.3s !important;
+    letter-spacing: 0.5px !important; width: 100% !important; max-width: 400px !important; margin: 10px auto !important; display: block !important;}
+.primary-btn:hover {transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(124,58,237,0.5) !important;}
 .primary-btn:active {transform: translateY(0) !important;}
 
 /* === INPUTS === */
-.input-card {background: #f9fafb !important; border: 1px solid #e5e7eb !important; border-radius: 16px !important;
-    padding: 20px !important; margin: 8px 0 !important;}
-.output-card {background: #f0f9ff !important; border: 2px solid #bfdbfe !important; border-radius: 16px !important;
-    padding: 20px !important; margin: 8px 0 !important;}
+.input-card {background: #fafafa !important; border: 1px solid #e5e7eb !important; border-radius: 12px !important;
+    padding: 16px !important; margin: 6px 0 !important;}
+.output-card {background: #f5f3ff !important; border: 1px solid #e0d4fc !important; border-radius: 12px !important;
+    padding: 16px !important; margin: 6px 0 !important;}
 section {border: none !important;}
 
 /* === STEP INDICATOR === */
-.step-box {display: flex; align-items: center; gap: 10px; margin: 10px 0 15px 0; padding: 10px 16px;
-    background: #f8f9ff; border-radius: 10px; border-left: 4px solid #667eea;}
-.step-num {display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px;
-    background: #667eea; color: white; border-radius: 50%; font-weight: 700; font-size: 0.85em; flex-shrink: 0;}
-.step-text {color: #374151; font-size: 0.95em;}
+.step-box {display: flex; align-items: center; gap: 8px; margin: 10px 0 15px 0; padding: 10px 16px;
+    background: #f8f5ff; border-radius: 10px; border-left: 4px solid #7c3aed;}
+.step-num {display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px;
+    background: #7c3aed; color: white; border-radius: 50%; font-weight: 700; font-size: 0.8em; flex-shrink: 0;}
+.step-text {color: #374151; font-size: 0.9em;}
+
+/* === SECTION BADGE (purple background) === */
+.section-badge {display: inline-block; background: linear-gradient(135deg, #7c3aed, #6366f1) !important;
+    color: white !important; font-size: 1em !important; font-weight: 700 !important;
+    padding: 8px 20px !important; border-radius: 10px !important; margin: 12px 0 8px 0 !important;
+    box-shadow: 0 2px 8px rgba(124,58,237,0.3);}
 
 /* === STATUS === */
 .status-ok {background: #ecfdf5 !important; border: 1px solid #a7f3d0 !important; border-radius: 10px !important;}
@@ -251,9 +256,13 @@ section {border: none !important;}
 /* === AUDIO PLAYER === */
 audio {border-radius: 10px !important;}
 
-/* === SECTION TITLE === */
-.section-title {font-size: 1.15em !important; font-weight: 700 !important; color: #374151 !important;
-    margin: 15px 0 10px 0 !important; padding-bottom: 6px !important; border-bottom: 2px solid #e5e7eb;}
+/* === SECTION TITLE (for subsections) === */
+.section-title {font-size: 1.05em !important; font-weight: 700 !important; color: #374151 !important;
+    margin: 12px 0 6px 0 !important; padding-bottom: 4px !important; border-bottom: 2px solid #e5e7eb;}
+
+/* === RESULT CARD === */
+.result-card {background: #f5f3ff !important; border: 2px solid #e0d4fc !important; border-radius: 16px !important;
+    padding: 20px !important; margin: 8px 0 !important;}
 """
 
 with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
@@ -277,12 +286,12 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
         # ==========================================================
         # TAB 1: TTS - CHUYỂN VĂN BẢN ĐA NGÔN NGỮ
         # ==========================================================
-        with gr.TabItem("⚡ TTS", id="tts"):
+        with gr.TabItem("⚡ TTS đa ngôn ngữ", id="tts"):
             gr.HTML('<div class="step-box"><span class="step-num">1</span><span class="step-text">Nhập văn bản</span><span class="step-num">2</span><span class="step-text">Chọn ngôn ngữ & giọng</span><span class="step-num">3</span><span class="step-text">Nhấn Tạo giọng</span></div>')
 
             with gr.Row():
                 with gr.Column(scale=1):
-                    gr.HTML('<div class="section-title">📝 Văn bản (đa ngôn ngữ)</div>')
+                    gr.HTML('<div class="section-badge">📝 Văn bản (đa ngôn ngữ)</div>')
                     vi_text = gr.Textbox(label="", lines=5, show_label=False,
                         placeholder="Nhập văn bản và CHỌN NGÔN NGỮ bên dưới...\n\nVí dụ:\n  • Tiếng Việt: Xin chào các bạn\n  • Tiếng Anh: Hello, how are you?\n  • Tiếng Trung: 你好，你好吗？\n  • Tiếng Nhật: こんにちは\n  • Tiếng Hàn: 안녕하세요",
                         elem_classes="input-card")
@@ -291,7 +300,7 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
                         value="Auto (Tự nhận diện)", allow_custom_value=False, elem_classes="input-card",
                         info="Chọn đúng ngôn ngữ để phát âm chuẩn nhất!")
 
-                    gr.HTML('<div class="section-title">🎭 Chọn giọng</div>')
+                    gr.HTML('<div class="section-badge">🎭 Chọn giọng</div>')
                     vi_voice_type = gr.Dropdown(label="Giọng nói", value="Tự động",
                         choices=["Tự động"] + list(_VOICE_PRESETS.keys()),
                         elem_classes="input-card")
@@ -299,7 +308,7 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
                         choices=["Không chọn"] + list(_VI_PITCH_MAP.keys()),
                         elem_classes="input-card")
 
-                    gr.HTML('<div class="section-title">🔊 Âm lượng</div>')
+                    gr.HTML('<div class="section-badge">🔊 Âm lượng</div>')
                     vi_vol = gr.Slider(0.1, 3.0, value=1.0, step=0.1, label="Âm lượng",
                         info="1.0 = bình thường, >1 to hơn, <1 nhỏ hơn")
 
@@ -314,10 +323,10 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
                     vi_btn = gr.Button("▶️  TẠO GIỌNG", variant="primary", elem_classes="primary-btn")
 
                 with gr.Column(scale=1):
-                    gr.HTML('<div class="section-title">🔊 Kết quả</div>')
-                    vi_audio = gr.Audio(label="", type="numpy", elem_classes="output-card")
+                    gr.HTML('<div class="section-badge">🔊 Kết quả</div>')
+                    vi_audio = gr.Audio(label="", type="numpy", elem_classes="result-card")
                     vi_status = gr.Textbox(label="", lines=1, interactive=False, show_label=False,
-                        elem_classes="output-card", placeholder="Trạng thái sẽ hiển thị ở đây...")
+                        elem_classes="result-card", placeholder="Trạng thái sẽ hiển thị ở đây...")
 
             def _vietnamese_fn(text, lang, voice_type, pitch, volume, sp, du, ns, gs):
                 if not text or not text.strip():
@@ -360,17 +369,17 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
         # ==========================================================
         # TAB 2: CLONE GIỌNG NÓI
         # ==========================================================
-        with gr.TabItem("🎤 Clone Giọng Nói", id="clone"):
+        with gr.TabItem("🎤 Clone giọng", id="clone"):
             gr.HTML('<div class="step-box"><span class="step-num">1</span><span class="step-text">Nhập văn bản</span><span class="step-num">2</span><span class="step-text">Tải audio mẫu (tùy chọn)</span><span class="step-num">3</span><span class="step-text">Nhấn Tạo giọng</span></div>')
 
             with gr.Row():
                 with gr.Column(scale=1):
-                    gr.HTML('<div class="section-title">📝 Văn bản</div>')
+                    gr.HTML('<div class="section-badge">📝 Văn bản</div>')
                     vc_text = gr.Textbox(label="", lines=4, show_label=False,
                         placeholder="Nhập nội dung bạn muốn chuyển thành giọng nói...",
                         elem_classes="input-card")
 
-                    gr.HTML('<div class="section-title">🎧 Audio tham chiếu</div>')
+                    gr.HTML('<div class="section-badge">🎧 Audio tham chiếu</div>')
                     vc_ref_audio = gr.Audio(label="Tải lên file audio (3-10 giây, tùy chọn)",
                         type="filepath", elem_classes="input-card")
                     gr.HTML('<div style="font-size:0.85em;color:#6b7280;margin:-5px 0 10px 0;">💡 3-10 giây là tối ưu. Audio >20s sẽ bị cắt tự động. Không có audio = mô hình tự chọn giọng.</div>')
@@ -397,10 +406,10 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
                     vc_btn = gr.Button("▶️  TẠO GIỌNG", variant="primary", elem_classes="primary-btn")
 
                 with gr.Column(scale=1):
-                    gr.HTML('<div class="section-title">🔊 Kết quả</div>')
-                    vc_audio = gr.Audio(label="", type="numpy", elem_classes="output-card")
+                    gr.HTML('<div class="section-badge">🔊 Kết quả</div>')
+                    vc_audio = gr.Audio(label="", type="numpy", elem_classes="result-card")
                     vc_status = gr.Textbox(label="", lines=1, interactive=False, show_label=False,
-                        elem_classes="output-card", placeholder="Trạng thái sẽ hiển thị ở đây...")
+                        elem_classes="result-card", placeholder="Trạng thái sẽ hiển thị ở đây...")
 
             def _clone_fn(text, lang, ref_aud, ref_text, ns, gs, dn, sp, du, pp, po, instruct):
                 mode = "clone" if ref_aud else "auto"
@@ -413,17 +422,17 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
         # ==========================================================
         # TAB 3: THIẾT KẾ GIỌNG NÓI
         # ==========================================================
-        with gr.TabItem("🎨 Thiết Kế Giọng Nói", id="design"):
+        with gr.TabItem("🎨 Thiết kế giọng", id="design"):
             gr.HTML('<div class="step-box"><span class="step-num">1</span><span class="step-text">Chọn loại giọng</span><span class="step-num">2</span><span class="step-text">Nhập văn bản</span><span class="step-num">3</span><span class="step-text">Nhấn Tạo giọng</span></div>')
 
             with gr.Row():
                 with gr.Column(scale=1):
-                    gr.HTML('<div class="section-title">📝 Văn bản</div>')
+                    gr.HTML('<div class="section-badge">📝 Văn bản</div>')
                     vd_text = gr.Textbox(label="", lines=4, show_label=False,
                         placeholder="Nhập nội dung bạn muốn chuyển thành giọng nói...",
                         elem_classes="input-card")
 
-                    gr.HTML('<div class="section-title">🎭 Thiết kế giọng</div>')
+                    gr.HTML('<div class="section-badge">🎭 Thiết kế giọng</div>')
                     vd_preset = gr.Dropdown(label="Loại giọng",
                         choices=["Không chọn"] + list(_VOICE_PRESETS.keys()), value="Không chọn",
                         elem_classes="input-card")
@@ -454,10 +463,10 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
                     vd_btn = gr.Button("▶️  TẠO GIỌNG", variant="primary", elem_classes="primary-btn")
 
                 with gr.Column(scale=1):
-                    gr.HTML('<div class="section-title">🔊 Kết quả</div>')
-                    vd_audio = gr.Audio(label="", type="numpy", elem_classes="output-card")
+                    gr.HTML('<div class="section-badge">🔊 Kết quả</div>')
+                    vd_audio = gr.Audio(label="", type="numpy", elem_classes="result-card")
                     vd_status = gr.Textbox(label="", lines=1, interactive=False, show_label=False,
-                        elem_classes="output-card", placeholder="Trạng thái sẽ hiển thị ở đây...")
+                        elem_classes="result-card", placeholder="Trạng thái sẽ hiển thị ở đây...")
 
             def _build_design_instruct(preset, accent, dialect, custom):
                 parts = []
@@ -485,7 +494,7 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue"), css=CUSTOM_CSS,
         # ==========================================================
         # TAB 4: HƯỚNG DẪN
         # ==========================================================
-        with gr.TabItem("📖 Hướng Dẫn", id="help"):
+        with gr.TabItem("📖 Trợ giúp cá nhân", id="help"):
 
             gr.Markdown("""
 ### 🎤 Clone Giọng Nói
